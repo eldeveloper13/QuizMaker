@@ -1,13 +1,21 @@
 package eldeveloper13.quizmaker.mainscreen;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
+import eldeveloper13.quizmaker.db.DataProvider;
+import eldeveloper13.quizmaker.db.QuizDeck;
+
 public class MainPresenter implements MainActivityContract.Presenter {
+
+    DataProvider mDataProvider;
 
     MainActivityContract.View mView = null;
 
     @Inject
-    public MainPresenter() {
+    public MainPresenter(DataProvider dataProvider) {
+        mDataProvider = dataProvider;
     }
 
     @Override
@@ -22,6 +30,13 @@ public class MainPresenter implements MainActivityContract.Presenter {
 
     @Override
     public void createDeck(String title) {
-        mView.showError("Not implemented yet");
+        mDataProvider.addQuizDeck(title);
+        getQuizDecks();
+    }
+
+    @Override
+    public void getQuizDecks() {
+        List<QuizDeck> mDecks = mDataProvider.getAllQuizDecks();
+        mView.populateDecks(mDecks);
     }
 }

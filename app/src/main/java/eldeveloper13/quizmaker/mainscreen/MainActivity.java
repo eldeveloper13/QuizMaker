@@ -5,12 +5,17 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -19,11 +24,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import eldeveloper13.quizmaker.QuizApplication;
 import eldeveloper13.quizmaker.R;
+import eldeveloper13.quizmaker.db.QuizDeck;
 
 public class MainActivity extends AppCompatActivity implements MainActivityContract.View {
 
     @BindView(R.id.coordinatorLayout)
     View mRootView;
+
+    @BindView(R.id.quiz_deck_list)
+    RecyclerView mQuizDeckListView;
 
     @Inject
     MainActivityContract.Presenter mPresenter;
@@ -39,6 +48,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mQuizDeckListView.setLayoutManager(layoutManager);
+        mQuizDeckListView.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
     }
 
     @Override
@@ -67,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     protected void onResume() {
         super.onResume();
         mPresenter.attachView(this);
+        mPresenter.getQuizDecks();
     }
 
     @Override
@@ -119,6 +133,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     public void showError(String error) {
         Snackbar snackbar = Snackbar.make(mRootView, error, Snackbar.LENGTH_LONG);
         snackbar.show();
+    }
+
+    @Override
+    public void populateDecks(List<QuizDeck> decks) {
+        QuizDeckAdapter adapter = (QuizDeckAdapter) mQuizDeckListView.getAdapter();
+        if (adapter == null) {
+            adapter = new QuizDeckAdapter(decks);
+            mQuizDeckListView.setAdapter(adapter);
+        } else {
+            adapter.updateDecks(decks);
+        }
     }
     //endregion
 }
