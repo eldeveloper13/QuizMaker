@@ -1,4 +1,4 @@
-package eldeveloper13.quizmaker.mainscreen;
+package eldeveloper13.quizmaker.deckscreen;
 
 import java.util.List;
 

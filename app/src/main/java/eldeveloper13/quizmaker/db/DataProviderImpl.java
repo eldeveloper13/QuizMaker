@@ -14,6 +14,13 @@ public class DataProviderImpl implements DataProvider {
     }
 
     @Override
+    public QuizDeck getQuizDeckById(long id) {
+        return new Select().from(QuizDeck.class)
+                .where("Id = ?", id)
+                .executeSingle();
+    }
+
+    @Override
     public List<QuizDeck> getAllQuizDecks() {
         return new Select().from(QuizDeck.class)
                 .orderBy("Name ASC")

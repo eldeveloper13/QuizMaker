@@ -5,6 +5,7 @@ import java.util.List;
 public interface DataProvider {
 
     Long addQuizDeck(String title);
+    QuizDeck getQuizDeckById(long id);
     List<QuizDeck> getAllQuizDecks();
 
     List<Question> getAllQuestionsByDeckId(long deckId);

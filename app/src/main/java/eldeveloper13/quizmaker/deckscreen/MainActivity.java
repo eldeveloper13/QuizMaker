@@ -1,6 +1,7 @@
-package eldeveloper13.quizmaker.mainscreen;
+package eldeveloper13.quizmaker.deckscreen;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,6 +27,8 @@ import butterknife.OnClick;
 import eldeveloper13.quizmaker.QuizApplication;
 import eldeveloper13.quizmaker.R;
 import eldeveloper13.quizmaker.db.QuizDeck;
+import eldeveloper13.quizmaker.quizscreen.QuestionsActivity;
+import rx.Subscriber;
 
 public class MainActivity extends AppCompatActivity implements MainActivityContract.View {
 
@@ -36,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     @Inject
     MainActivityContract.Presenter mPresenter;
+    private QuizDeckAdapter mAdapter;
 
     //region AppCompatActivity Methods
     @Override
@@ -44,14 +49,33 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        ((QuizApplication)getApplication()).getAppComponent().inject(this);
+        ((QuizApplication) getApplication()).getAppComponent().inject(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mAdapter = new QuizDeckAdapter(new ArrayList<QuizDeck>());
+        mAdapter.getPositionClicks().subscribe(new Subscriber<QuizDeck>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(QuizDeck quizDeck) {
+                Intent intent = QuestionsActivity.getStartActivityIntent(MainActivity.this, quizDeck.getId());
+                startActivity(intent);
+            }
+        });
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mQuizDeckListView.setLayoutManager(layoutManager);
         mQuizDeckListView.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
+        mQuizDeckListView.setAdapter(mAdapter);
     }
 
     @Override
@@ -137,13 +161,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     @Override
     public void populateDecks(List<QuizDeck> decks) {
-        QuizDeckAdapter adapter = (QuizDeckAdapter) mQuizDeckListView.getAdapter();
-        if (adapter == null) {
-            adapter = new QuizDeckAdapter(decks);
-            mQuizDeckListView.setAdapter(adapter);
-        } else {
-            adapter.updateDecks(decks);
-        }
+        mAdapter.updateDecks(decks);
     }
     //endregion
 }

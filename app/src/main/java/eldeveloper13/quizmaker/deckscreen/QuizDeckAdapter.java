@@ -1,4 +1,4 @@
-package eldeveloper13.quizmaker.mainscreen;
+package eldeveloper13.quizmaker.deckscreen;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,8 +10,11 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import eldeveloper13.quizmaker.R;
 import eldeveloper13.quizmaker.db.QuizDeck;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 public class QuizDeckAdapter extends RecyclerView.Adapter<QuizDeckAdapter.ViewHolder> {
 
@@ -21,6 +24,8 @@ public class QuizDeckAdapter extends RecyclerView.Adapter<QuizDeckAdapter.ViewHo
         mQuizDecks = decks;
     }
 
+    private final PublishSubject<QuizDeck> onClickSubject = PublishSubject.create();
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -29,9 +34,19 @@ public class QuizDeckAdapter extends RecyclerView.Adapter<QuizDeckAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         String name = String.format("%d:\t%s", position+1, mQuizDecks.get(position).mName);
         holder.mDeckNameTextView.setText(name);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickSubject.onNext(mQuizDecks.get(position));
+            }
+        });
+    }
+
+    public Observable<QuizDeck> getPositionClicks() {
+        return onClickSubject.asObservable();
     }
 
     @Override
