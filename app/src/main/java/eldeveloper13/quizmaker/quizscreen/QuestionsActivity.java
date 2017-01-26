@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import eldeveloper13.quizmaker.QuizApplication;
 import eldeveloper13.quizmaker.R;
 import eldeveloper13.quizmaker.db.Question;
@@ -61,6 +62,11 @@ public class QuestionsActivity extends AppCompatActivity implements QuestionsCon
         super.onPause();
     }
 
+    @OnClick(R.id.add_question_fab)
+    public void addQuestionClicked() {
+        startActivityForResult(NewQuestionActivity.getStartActivityIntent(this), Extras.NEW_QUESTION_REQUEST_CODE);
+    }
+
     @Override
     public void setTitle(String title) {
         getSupportActionBar().setTitle(title);
@@ -73,5 +79,6 @@ public class QuestionsActivity extends AppCompatActivity implements QuestionsCon
 
     static class Extras {
         public static final String DECK_ID = "deck_id";
+        public static final int NEW_QUESTION_REQUEST_CODE = 1000;
     }
 }

@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     //endregion
 
-    @OnClick(R.id.fab)
+    @OnClick(R.id.add_deck_fab)
     protected void onFabClickedListener() {
         showCreateDeckDialog();
     }
