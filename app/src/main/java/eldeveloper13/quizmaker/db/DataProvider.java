@@ -11,4 +11,6 @@ public interface DataProvider {
     List<Question> getAllQuestionsByDeckId(long deckId);
 
     List<Question> getQuestionById(long id);
+
+    long addQuestionToQuiz(String question, List<String> answer, long quizDeckId);
 }

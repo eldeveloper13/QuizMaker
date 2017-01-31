@@ -1,4 +1,4 @@
-package eldeveloper13.quizmaker.deckscreen;
+package eldeveloper13.quizmaker.quizscreen;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,57 +11,61 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import eldeveloper13.quizmaker.R;
-import eldeveloper13.quizmaker.db.QuizDeck;
+import eldeveloper13.quizmaker.db.Question;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
-public class QuizDeckAdapter extends RecyclerView.Adapter<QuizDeckAdapter.ViewHolder> {
+/**
+ * Created by ericl on 1/31/2017.
+ */
 
-    public List<QuizDeck> mQuizDecks;
+public class QuestionListAdapter extends RecyclerView.Adapter<QuestionListAdapter.ViewHolder> {
 
-    public QuizDeckAdapter(List<QuizDeck> decks) {
-        mQuizDecks = decks;
+    List<Question> mQuestions;
+
+    private final PublishSubject<Question> mOnClickedSubject = PublishSubject.create();
+
+    public QuestionListAdapter(List<Question> questions) {
+        mQuestions = questions;
     }
-
-    private final PublishSubject<QuizDeck> onClickSubject = PublishSubject.create();
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.view_holder_quiz_deck, parent, false);
+                .inflate(R.layout.view_holder_question_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        String name = String.format("%d:\t%s", position+1, mQuizDecks.get(position).mName);
-        holder.mDeckNameTextView.setText(name);
+        String text = String.format("%d:\t%s", position+1, mQuestions.get(position).mQuestion);
+        holder.mTextView.setText(text);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onClickSubject.onNext(mQuizDecks.get(position));
+                mOnClickedSubject.onNext(mQuestions.get(position));
             }
         });
     }
 
-    public Observable<QuizDeck> getPositionClicks() {
-        return onClickSubject.asObservable();
-    }
-
     @Override
     public int getItemCount() {
-        return mQuizDecks.size();
+        return mQuestions.size();
     }
 
-    public void updateDecks(List<QuizDeck> decks) {
-        mQuizDecks = decks;
+    public Observable<Question> getPositionClicks() {
+        return mOnClickedSubject.asObservable();
+    }
+
+    public void updateQuestions(List<Question> questions) {
+        mQuestions = questions;
         notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.deck_name_textview)
-        TextView mDeckNameTextView;
+        @BindView(R.id.text1)
+        TextView mTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);

@@ -40,4 +40,14 @@ public class DataProviderImpl implements DataProvider {
                 .where("Id = ?", id)
                 .execute();
     }
+
+    @Override
+    public long addQuestionToQuiz(String question, List<String> answer, long quizDeckId) {
+        QuizDeck deck = getQuizDeckById(quizDeckId);
+        Question newQuestion = new Question();
+        newQuestion.mQuestion = question;
+        newQuestion.mAnswer = answer.get(0);
+        newQuestion.mDeck = deck;
+        return newQuestion.save();
+    }
 }

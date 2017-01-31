@@ -21,7 +21,8 @@
         </activity>
         <activity android:name=".quizscreen.QuestionsActivity"
             android:label="@string/app_name"/>
-        <activity android:name=".quizscreen.NewQuestionActivity" />
+        <activity android:name=".newquizscreen.NewQuestionActivity" />
+
         <!-- ActiveAndroid Metadata -->
         <meta-data android:name="AA_DB_NAME" android:value="Quiz.db" />
         <meta-data android:name="AA_MODELS" android:value="eldeveloper13.quizmaker.db.QuizDeck, eldeveloper13.quizmaker.db.Question" />
