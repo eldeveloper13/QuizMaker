@@ -5,6 +5,7 @@ import java.util.List;
 
 import eldeveloper13.quizmaker.db.DataProvider;
 import eldeveloper13.quizmaker.db.Question;
+import eldeveloper13.quizmaker.db.QuizDeck;
 
 public class NewQuestionPresenter implements NewQuestionContract.Presenter {
 
@@ -14,11 +15,13 @@ public class NewQuestionPresenter implements NewQuestionContract.Presenter {
 
     public NewQuestionPresenter(Long quizDeckId, Long questionId, DataProvider dataProvider) {
         mDataProvider = dataProvider;
-        long id = questionId;
-        if (questionId == null) {
-            id = mDataProvider.addQuestionToQuiz("", Collections.<String>emptyList(), quizDeckId);
+        if (questionId != null) {
+            mQuestion = mDataProvider.getQuestionById(questionId).get(0);
+        } else {
+            QuizDeck deck = mDataProvider.getQuizDeckById(quizDeckId);
+            mQuestion = new Question();
+            mQuestion.mDeck = deck;
         }
-        mQuestion = mDataProvider.getQuestionById(id).get(0);
     }
 
     @Override
