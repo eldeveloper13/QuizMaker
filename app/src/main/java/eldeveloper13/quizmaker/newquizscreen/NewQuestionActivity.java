@@ -7,34 +7,29 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import eldeveloper13.quizmaker.QuizApplication;
 import eldeveloper13.quizmaker.R;
+import eldeveloper13.quizmaker.view.RemovableEditText;
 
 public class NewQuestionActivity extends AppCompatActivity implements NewQuestionContract.View {
 
     @BindView(R.id.question_edittext)
     EditText mQuestionEditText;
 
-    @BindViews({R.id.answer_edittext1,
-            R.id.answer_edittext2,
-            R.id.answer_edittext3,
-            R.id.answer_edittext4,
-            R.id.answer_edittext5
-    })
-    List<EditText> mAnswerEditTexts;
+    @BindView(R.id.answers_list_layout)
+    LinearLayout mAnswerListLayout;
 
     @Inject
     NewQuestionContract.PresenterFactory mFactory;
@@ -60,26 +55,6 @@ public class NewQuestionActivity extends AppCompatActivity implements NewQuestio
 
         ButterKnife.bind(this);
         ((QuizApplication) getApplication()).getAppComponent().inject(this);
-        for (final EditText answerEditText: mAnswerEditTexts) {
-            answerEditText.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    final int DRAWABLE_LEFT = 0;
-                    final int DRAWABLE_TOP = 1;
-                    final int DRAWABLE_RIGHT = 2;
-                    final int DRAWABLE_BOTTOM = 3;
-
-                    if (answerEditText.getCompoundDrawables()[DRAWABLE_RIGHT] != null && motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                        if (motionEvent.getRawX() >= (answerEditText.getRight() - answerEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                            answerEditText.setText("");
-                            answerEditText.setVisibility(View.GONE);
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            });
-        }
 
         long questionDeckId = getIntent().getLongExtra(Extras.QUESTION_ID, -1L);
         if (questionDeckId != -1L) {
@@ -119,26 +94,54 @@ public class NewQuestionActivity extends AppCompatActivity implements NewQuestio
         super.onPause();
     }
 
+    @Override
+    public void setView(String question, List<String> answers) {
+        mQuestionEditText.setText(question);
+        for (RemovableEditText removableEditText : getAnswerEditTexts()) {
+            removableEditText.setText(answers.get(0));
+        }
+    }
+
     @OnClick(R.id.add_answer_btn)
     public void addAnswerButtonClicked(){
-        for (EditText answerEditText : mAnswerEditTexts) {
-            if (answerEditText.getVisibility() == View.GONE) {
-                answerEditText.setVisibility(View.VISIBLE);
-                break;
+        final RemovableEditText removableEditText = new RemovableEditText(this);
+        removableEditText.setRemoveButtonVisible(true);
+        removableEditText.setHint("Enter answer");
+        removableEditText.setOnRemoveButtonClickedListener(new RemovableEditText.OnRemoveButtonClickedListener() {
+            @Override
+            public void onClicked() {
+                mAnswerListLayout.removeView(removableEditText);
             }
-        }
+        });
+        mAnswerListLayout.addView(removableEditText);
     }
 
     private void saveQuestion() {
         String question = mQuestionEditText.getText().toString();
-        List<String> answers = Collections.singletonList(mAnswerEditTexts.get(0).getText().toString());
+        List<String> answers = getAllAnswers();
         mPresenter.saveQuestion(question, answers);
     }
 
-    @Override
-    public void setView(String question, List<String> answers) {
-        mQuestionEditText.setText(question);
-        mAnswerEditTexts.get(0).setText(answers.get(0));
+    private List<RemovableEditText> getAnswerEditTexts() {
+        List<RemovableEditText> editTextList = new ArrayList<>();
+        for (int i = 0; i < mAnswerListLayout.getChildCount(); i++) {
+            View view = mAnswerListLayout.getChildAt(i);
+            if (view instanceof RemovableEditText) {
+                editTextList.add((RemovableEditText) view);
+            }
+        }
+        return editTextList;
+    }
+
+    private List<String> getAllAnswers() {
+        List<String> answers = new ArrayList<>();
+        for (int i = 0; i < mAnswerListLayout.getChildCount(); i++) {
+            View view = mAnswerListLayout.getChildAt(i);
+            if (view instanceof RemovableEditText) {
+                answers.add(((RemovableEditText) view).getText().toString());
+            }
+        }
+        return answers;
     }
 
     class Extras {
