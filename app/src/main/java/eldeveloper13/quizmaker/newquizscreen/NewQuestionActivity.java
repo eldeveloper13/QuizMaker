@@ -97,13 +97,26 @@ public class NewQuestionActivity extends AppCompatActivity implements NewQuestio
     @Override
     public void setView(String question, List<String> answers) {
         mQuestionEditText.setText(question);
-        for (RemovableEditText removableEditText : getAnswerEditTexts()) {
+        mAnswerListLayout.removeAllViews();
+        RemovableEditText removableEditText = addRemovableEditText();
+        removableEditText.setRemoveButtonVisible(false);
+        if (answers.size() > 0) {
             removableEditText.setText(answers.get(0));
+        }
+
+        for (int i = 1; i < answers.size(); i++) {
+            removableEditText = addRemovableEditText();
+            removableEditText.setText(answers.get(i));
         }
     }
 
     @OnClick(R.id.add_answer_btn)
     public void addAnswerButtonClicked(){
+        RemovableEditText removableEditText = addRemovableEditText();
+        removableEditText.requestFocus();
+    }
+
+    private RemovableEditText addRemovableEditText() {
         final RemovableEditText removableEditText = new RemovableEditText(this);
         removableEditText.setRemoveButtonVisible(true);
         removableEditText.setHint("Enter answer");
@@ -114,6 +127,7 @@ public class NewQuestionActivity extends AppCompatActivity implements NewQuestio
             }
         });
         mAnswerListLayout.addView(removableEditText);
+        return removableEditText;
     }
 
     private void saveQuestion() {

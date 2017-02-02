@@ -20,6 +20,8 @@ public class NewQuestionPresenter implements NewQuestionContract.Presenter {
         } else {
             QuizDeck deck = mDataProvider.getQuizDeckById(quizDeckId);
             mQuestion = new Question();
+            mQuestion.mQuestion = "";
+            mQuestion.mAnswer = Collections.emptyList();
             mQuestion.mDeck = deck;
         }
     }
@@ -28,7 +30,7 @@ public class NewQuestionPresenter implements NewQuestionContract.Presenter {
     public void attachView(NewQuestionContract.View view) {
         mView = view;
         if (mQuestion != null) {
-            mView.setView(mQuestion.mQuestion, Collections.singletonList(mQuestion.mAnswer));
+            mView.setView(mQuestion.mQuestion, mQuestion.mAnswer);
         }
     }
 
@@ -38,9 +40,9 @@ public class NewQuestionPresenter implements NewQuestionContract.Presenter {
     }
 
     @Override
-    public void saveQuestion(String question, List<String> answer) {
+    public void saveQuestion(String question, List<String> answers) {
         mQuestion.mQuestion = question;
-        mQuestion.mAnswer = answer.get(0);
+        mQuestion.mAnswer = answers;
         mQuestion.save();
     }
 }

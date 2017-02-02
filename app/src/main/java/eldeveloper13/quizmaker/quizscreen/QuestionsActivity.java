@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +23,7 @@ import eldeveloper13.quizmaker.QuizApplication;
 import eldeveloper13.quizmaker.R;
 import eldeveloper13.quizmaker.db.Question;
 import eldeveloper13.quizmaker.newquizscreen.NewQuestionActivity;
+import eldeveloper13.quizmaker.testScreen.TestActivity;
 import rx.Subscriber;
 
 public class QuestionsActivity extends AppCompatActivity implements QuestionsContract.View {
@@ -84,6 +87,22 @@ public class QuestionsActivity extends AppCompatActivity implements QuestionsCon
     protected void onPause() {
         mPresenter.detachView();
         super.onPause();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_questions_list, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_test) {
+            startActivity(TestActivity.getStartActivityIntent(this, mDeckId));
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     @OnClick(R.id.add_question_fab)

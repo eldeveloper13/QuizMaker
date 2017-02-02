@@ -12,6 +12,8 @@ import eldeveloper13.quizmaker.newquizscreen.NewQuestionContract;
 import eldeveloper13.quizmaker.newquizscreen.NewQuestionPresenterFactory;
 import eldeveloper13.quizmaker.quizscreen.QuestionsContract;
 import eldeveloper13.quizmaker.quizscreen.QuestionsPresenter;
+import eldeveloper13.quizmaker.testScreen.TestContract;
+import eldeveloper13.quizmaker.testScreen.TestPresenter;
 
 @Module
 public class AppModule {
@@ -36,5 +38,10 @@ public class AppModule {
     @Singleton
     NewQuestionContract.PresenterFactory provideNewQuestionPresenterFactory(NewQuestionPresenterFactory factory) {
         return factory;
+    }
+
+    @Provides
+    TestContract.Presenter provideTestPresenter(TestPresenter presenter) {
+        return presenter;
     }
 }

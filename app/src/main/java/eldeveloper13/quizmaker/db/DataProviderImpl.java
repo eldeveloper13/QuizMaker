@@ -42,11 +42,11 @@ public class DataProviderImpl implements DataProvider {
     }
 
     @Override
-    public long addQuestionToQuiz(String question, List<String> answer, long quizDeckId) {
+    public long addQuestionToQuiz(String question, List<String> answers, long quizDeckId) {
         QuizDeck deck = getQuizDeckById(quizDeckId);
         Question newQuestion = new Question();
         newQuestion.mQuestion = question;
-        newQuestion.mAnswer = answer.get(0);
+        newQuestion.mAnswer = answers;
         newQuestion.mDeck = deck;
         return newQuestion.save();
     }
